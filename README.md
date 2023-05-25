@@ -1,6 +1,8 @@
 # Project Title
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+[![License](https://img.shields.io/badge/license-GNU%20AGPL-blue.svg)](LICENSE)
+[![Library](https://img.shields.io/badge/license-Puppeteer-blue.svg)](startup-and-configuration)
 
 ## Description
 
@@ -12,12 +14,10 @@ A brief description of the project, explaining its purpose and main features.
 - [Startup and Configuration](#startup-and-configuration)
 - [Usage](#usage)
 - [File Manifest](#file-manifest)
-- [Contributing](#contributing)
 - [License](#license)
 - [List of Known Bugs](#list-of-known-bugs)
 - [Credits](#credits)
 - [Changelogs](#changelogs)
-- [Contact](#contact)
 
 ## Installation
 
@@ -35,13 +35,9 @@ Guidelines on how to use the project. Provide examples or code snippets if neces
 
 List all the files included in the project and briefly describe their purpose.
 
-## Contributing
-
-Explain how others can contribute to the project. Include guidelines for pull requests and code formatting. Provide information on how to set up a development environment if applicable.
-
 ## License
 
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software.
+This project is licensed under the [GNU%20AGPL License](LICENSE).
 
 ## List of Known Bugs
 
@@ -54,10 +50,6 @@ Acknowledge any individuals, projects, or resources that have inspired or assist
 ## Changelogs
 
 List the changes and updates made to the project in chronological order. Include version numbers and dates.
-
-## Contact
-
-Include your contact information so that users can reach out to you with questions or feedback. You can include your email address, social media handles, or a link to a discussion forum or issue tracker.
 
 ## Acknowledgements
 

@@ -12,8 +12,6 @@ const scraperObject = {
       data.map((info) => info.querySelector("a").getAttribute("href"))
     )
 
-    page.close()
-
     let products = await page.evaluate(async () => {
       const list = []
       for (const PoI of PoIs) {
@@ -33,7 +31,6 @@ const scraperObject = {
           tags: tags,
         })
 
-        page.close()
       }
 
       return list
