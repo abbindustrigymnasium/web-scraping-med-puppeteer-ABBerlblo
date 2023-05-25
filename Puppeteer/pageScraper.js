@@ -46,7 +46,7 @@ const scraperObject = {
     const result = { genre: [] }
     result.genre.push(products)
 
-    fs.writeFile(`250_db.json`, JSON.stringify(result), "utf8", function (err) {
+    fs.writeFile(`./Data/250_db.json`, JSON.stringify(result), "utf8", function (err) {
       if (err) {
         return console.log(err)
       }
