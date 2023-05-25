@@ -1,0 +1,17 @@
+{
+  "name": "willys-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scrape": "node Puppeteer/index.js",
+    "server": "node runServer.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-server": "^0.17.3",
+    "puppeteer": "^16.1.0"
+  }
+}
