@@ -2,7 +2,7 @@
 
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL-blue.svg)](LICENSE)
-[![Library](https://img.shields.io/badge/license-Puppeteer-Green.svg)](package.json)
+[![Library](https://img.shields.io/badge/library-Puppeteer-Green.svg)](package.json)
 
 ## Description
 
