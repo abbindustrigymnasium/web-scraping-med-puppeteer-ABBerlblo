@@ -2,7 +2,7 @@
 
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL-blue.svg)](LICENSE)
-[Library](https://img.shields.io/badge/license-Puppeteer-green.svg)
+[![Library](https://img.shields.io/badge/license-Puppeteer-Green.svg)](package.json)
 
 ## Description
 
@@ -36,7 +36,7 @@ List all the files included in the project and briefly describe their purpose.
 
 ## License
 
-This project is licensed under the [GNU%20AGPL License](LICENSE).
+This project is licensed under the [GNU AGPL License](LICENSE).
 
 ## List of Known Bugs
 
