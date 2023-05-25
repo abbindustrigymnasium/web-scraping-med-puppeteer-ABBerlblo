@@ -2,7 +2,7 @@
 
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL-blue.svg)](LICENSE)
-[![Library](https://img.shields.io/badge/license-Puppeteer-blue.svg)](startup-and-configuration)
+[![Library](https://img.shields.io/badge/license-Puppeteer-green.svg)]
 
 ## Description
 
@@ -17,7 +17,6 @@ A brief description of the project, explaining its purpose and main features.
 - [License](#license)
 - [List of Known Bugs](#list-of-known-bugs)
 - [Credits](#credits)
-- [Changelogs](#changelogs)
 
 ## Installation
 
@@ -46,10 +45,6 @@ List any known bugs or issues with the project. Include steps to reproduce and, 
 ## Credits
 
 Acknowledge any individuals, projects, or resources that have inspired or assisted your work.
-
-## Changelogs
-
-List the changes and updates made to the project in chronological order. Include version numbers and dates.
 
 ## Acknowledgements
 
