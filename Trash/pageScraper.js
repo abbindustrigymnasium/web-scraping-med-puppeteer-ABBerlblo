@@ -12,9 +12,12 @@ const scraperObject = {
       data.map((info) => info.querySelector("a").getAttribute("href"))
     )
 
-    let products = await page.evaluate(async () => {
+    console.log(PoIs)
+
+    let products = await page.evaluate(async (PoIs) => {
       const list = []
       for (const PoI of PoIs) {
+        let page = await browser.newPage()
         await page.goto(`${this.url}${PoI}`, { waitUntil: "domcontentloaded" })
 
         const name = document.querySelector(".sc-afe43def-1.fDTGTb").innerHTML
@@ -34,7 +37,7 @@ const scraperObject = {
       }
 
       return list
-    })
+    }, PoIs)
 
     products = products.map((p) => {
       return { ...p, genres: genre }

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "scrape": "node Puppeteer/index.js",
-    "server": "node runServer.js"
+    "server": "node runServer.js",
+    "neo": "node Puppeteer/Neo.js"
   },
   "author": "",
   "license": "ISC",

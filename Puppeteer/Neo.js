@@ -1,57 +1,93 @@
-import puppeteer from "puppeteer"
-import fs from "fs"
+const fs = require("fs")
+const puppeteer = require("puppeteer")
 
-// const sleep = s => new Promise(r => setTimeout(r, s * 1000))
 const url = "https://www.imdb.com/chart/top/"
 
 async function PageScrape (page, ext) {
     let nav = "https://www.imdb.com" + ext
-    page.goto(nav, { waitUntil: "domcontentloaded" })
+    await page.goto(nav, { waitUntil: "domcontentloaded" })
 
     let items = await page.evaluate(() => {
-        let moviedata = document.querySelector(".sc-52d569c6-0.kNzJA-D")
+        function convertDurationToMinutes (duration) {
+            const hours = parseInt(duration.match(/(\d+)h/)?.[1] ?? 0)
+            const minutes = parseInt(duration.match(/(\d+)m/)?.[1] ?? 0)
+            return hours * 60 + minutes
+        }
+
+        let moviedata = document.querySelectorAll(".gDnnOB")
 
         return Array.from(moviedata).map((movieinfo) => {
-            let title = movieinfo.querySelector("sc-afe43def-0.hnYaOZ > span").innerText
-            let year = movieinfo.querySelector("ul > li.ipc-inline-list__item > a").innerText
-            let rating = movieinfo.querySelector("ul > li.ipc-inline-list__item > a").innerText
-            let length = movieinfo.querySelector("ul > li.ipc-inline-list__item").innerText
-            let genre = movieinfo.querySelector("")
-            let genres = Array.from(genre).map((innerData) => {
-                let genredata = innerData.querySelectorAll("").innerText
-                return genredata
-            })
-            return { title, year, rating, length, genres }
+            let title = movieinfo.querySelector(".sc-afe43def-1.fDTGTb").innerText
+            let imageUrl = "https://www.imdb.com" + movieinfo.querySelector(".ipc-lockup-overlay.ipc-focusable").getAttribute("href")
+            let year = movieinfo.querySelector(".ipc-inline-list.ipc-inline-list--show-dividers.sc-afe43def-4.kdXikI.baseAlt a").innerText
+            let rating = movieinfo.querySelector(".sc-bde20123-1.iZlgcd").innerText
+            let duration = movieinfo.querySelector(".ipc-inline-list.ipc-inline-list--show-dividers.sc-afe43def-4.kdXikI.baseAlt li:nth-child(3)").innerText
+            let genres = Array.from(document.querySelectorAll(".ipc-chip.ipc-chip--on-baseAlt")).map((tag) => tag.querySelector("span").innerText)
+
+            let lenghtMin = convertDurationToMinutes(duration)
+
+            return {
+                title: title,
+                year: year,
+                rating: rating,
+                length: lenghtMin,
+                imageUrl: imageUrl,
+                genres: genres,
+            }
         })
     })
-    console.log(items)
+    return items
 }
 
 const launch = async () => {
-    const browser = await puppeteer.launch(
-        {
-            headless: false,
-            defaultViewport: null
-        }
-    )
+    try {
+        const browser = await puppeteer.launch(
+            {
+                headless: false,
+                args: ["--disable-setuid-sandbox"],
+                ignoreHTTPSErrors: true,
+                defaultViewport: null
+            }
+        )
 
-    const website = await browser.newPage()
-    await website.goto(url, { waitUntil: "domcontentloaded" })
+        const website = await browser.newPage()
+        await website.goto(url, { waitUntil: "domcontentloaded" })
 
-    const links = await website.evaluate(() => {
-        let data = document.querySelectorAll(".chart.full-width > .lister-list > tr")
-        return Array.from(data).map((info) => {
-            const link = info.querySelector("td.titleColumn > a").getAttribute("href")
-            return link
+        const links = await website.evaluate(() => {
+            let data = document.querySelectorAll(".lister-list > tr")
+            return Array.from(data).map((info) => {
+                const link = info.querySelector("a").getAttribute("href")
+                return link
+            })
         })
-    })
 
-    for (let link of links) {
-        console.log(link)
-        await PageScrape(website, link)
-    }
+        let films = []
+        let i = 1
 
-    await browser.close()
+        for (let link of links) {
+            try {
+                films.push(await PageScrape(website, link))
+                const progress = ((i / links.length) * 100).toFixed(2)
+                console.log(`Progress: ${progress}% (${i}/${links.length})`)
+                i++
+            } catch (err) {
+                console.log("Error occurred while scraping page:", err)
+                console.log("Skipping to the next link...")
+                continue
+            }
+        }
+
+        const data = { films: films.flat() }
+
+        fs.writeFile(`./Data/Top_db.json`, JSON.stringify(data), "utf8", function (err) {
+            if (err) {
+                return console.log(err)
+            }
+            console.log(`The data has been scraped and saved successfully! View it at 'db.json'`)
+        })
+
+        await browser.close()
+    } catch (err) { console.log("Error occurred while launching Puppeteer:", err) }
 }
 
-await launch()
+launch()

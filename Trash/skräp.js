@@ -112,3 +112,16 @@
 
 // module.exports = scraperObject
 
+// let length = movieinfo.querySelector("ul > li.ipc-inline-list__item").innerText
+            // let genre = movieinfo.querySelector(".ipc-chip-list__scroller")
+            // let genres = Array.from(genre).map((innerData) => { innerData.querySelectorAll(".ipc-chip.ipc-chip--on-baseAlt span").innerText })
+            // let genres = []
+            // let tags = document.querySelectorAll(".ipc-chip.ipc-chip--on-baseAlt")
+            // for (const tag of tags) {
+            //     const genre = tag.querySelector("span").innerText
+            //     genres.push(genre)
+            // }
+            // let genre = movieinfo.querySelector(".ipc-chip-list__scroller")
+            // let genres = Array.from(genre).map((innerData) => {
+            //     return innerData.querySelectorAll(".ipc-chip.ipc-chip--on-baseAlt span").innerText
+            // })
