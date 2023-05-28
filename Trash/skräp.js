@@ -125,3 +125,16 @@
             // let genres = Array.from(genre).map((innerData) => {
             //     return innerData.querySelectorAll(".ipc-chip.ipc-chip--on-baseAlt span").innerText
             // })
+
+
+
+    // await page.goto(items.imageUrl, { waitUntil: "domcontentloaded" })
+    // let imageSrc = await page.evaluate(() => document.querySelector(".sc-7c0a9e7c-2.kEDMKk").getAttribute("src"))
+    // items = items.map((f) => f, imageSrc)
+
+    // for (let i = 0; i < items.length; i++) {
+    //     let imageUrl = items[i].imageUrl
+    //     await page.goto(imageUrl, { waitUntil: "domcontentloaded" })
+    //     imageSrc = await page.evaluate(() => document.querySelector(".sc-7c0a9e7c-2.kEDMKk").getAttribute("src"))
+    //     items[i].imageSrc = imageSrc
+    // }
