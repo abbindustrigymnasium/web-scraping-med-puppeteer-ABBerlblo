@@ -1,9 +1,9 @@
 <template>
-    <div class="w-full text-center text-lg text-white bg-slate-500 py-8">
+    <div class="w-full text-center text-xl text-white bg-slate-500 py-12">
         Copyright
         &copy;
         {{ year }}
-        by Erling, all rights reserved.
+        by Erling Blomberg, all rights reserved.
     </div>
 </template>
 

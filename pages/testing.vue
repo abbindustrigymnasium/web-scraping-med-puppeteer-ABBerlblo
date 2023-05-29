@@ -18,6 +18,10 @@
                     Search
                 </button>
             </div> -->
+            <div>
+                <input type="text" placeholder="Sort by..." v-model="sortBy"
+                    class="border-b-2 border-slate-400 text-center w-4/5 text-lg mt-6">
+            </div>
             <span class="border-b-2 border-slate-400 w-3/5 my-4"></span>
         </div>
         <div class="w-full flex flex-col items-center justify-center">
@@ -34,7 +38,8 @@
                         <br>
                         Rating: {{ film.rating }}
                         <br>
-                        <!-- Length : {{ film.length }} <br>-->
+                        Length : {{ film.len }}
+                        <br>
                         Year: {{ film.year }}
                     </div>
                     <span class="border-b-2 border-slate-400 pt-2 w-32"></span>
@@ -62,10 +67,12 @@ let batchCounter = 0
 const searchYear = ref('')
 const searchRating = ref('')
 const searchLength = ref('')
-const searchGenres = ref('')
 
-watch([searchYear, searchRating, searchLength], ([year, rating, length]) => {
-    exeSearch(year, rating, length)
+const searchGenres = ref('')
+const sortBy = ref('')
+
+watch([searchYear, searchRating, searchLength, sortBy], ([year, rating, length, sort]) => {
+    exeSearch(year, rating, length, sort)
 })
 
 const parseOperatorValue = (type, value) => {
@@ -105,38 +112,79 @@ const parseOperatorValue = (type, value) => {
     return params.join('&')
 }
 
-const exeSearch = (year, rating, len) => {
+// const getSortParam = (sortByValue) => {
+//     if (sortByValue.startsWith('<')) {
+//         const sortField = sortByValue.slice(1)
+//         return `_sort=${sortField}&_order=asc`
+//     }
+
+//     if (sortByValue.startsWith('>')) {
+//         const sortField = sortByValue.slice(1)
+//         return `_sort=${sortField}&_order=desc`
+//     }
+
+//     return null // Return null if sortByValue is empty or doesn't match the expected format
+// }
+
+const getSortParam = (value) => {
+    const argument = value.split('&')
+    const sortValues = []
+    const sortOrders = []
+
+    argument.forEach((arg) => {
+        let operator = '='
+        let argValue = arg
+
+        if (arg.startsWith('<')) {
+            operator = '<'
+            argValue = arg.slice(1)
+        } else if (arg.startsWith('>')) {
+            operator = '>'
+            argValue = arg.slice(1)
+        }
+
+        sortValues.push(argValue)
+        sortOrders.push(operator === '<' ? 'asc' : 'desc')
+    })
+
+    const sortParam = sortValues.join(',')
+    const orderParam = sortOrders.join(',')
+
+    return `_sort=${sortParam}&_order=${orderParam}`
+}
+
+const exeSearch = async (year, rating, len) => {
     const params = []
 
-    if (year) {
-        const parsedYear = parseOperatorValue('year', year)
-        params.push(parsedYear)
+    const parseAndPushParam = (type, value) => {
+        if (value) {
+            const parsedParam = parseOperatorValue(type, value)
+            params.push(parsedParam)
+        }
     }
 
-    if (rating) {
-        const parsedRating = parseOperatorValue('rating', rating)
-        params.push(parsedRating)
-    }
+    parseAndPushParam('year', year)
+    parseAndPushParam('rating', rating)
+    parseAndPushParam('len', len)
 
-    if (len) {
-        const parsedLength = parseOperatorValue('length', len)
-        params.push(parsedLength)
+    const sortParam = getSortParam(sortBy.value)
+    if (sortParam) {
+        params.push(sortParam)
     }
 
     const queryParams = params.join('&')
 
-    axios
-        .get(`http://localhost:4000/films${queryParams ? `?${queryParams}` : ''}`)
-        .then((response) => {
-            const films = response.data
+    console.log(`http://localhost:4000/films${queryParams ? `?${queryParams}` : ''}`)
+    try {
+        const response = await axios.get(`http://localhost:4000/films${queryParams ? `?${queryParams}` : ''}`)
+        const films = response.data
 
-            allFilms.value = films
-            batchCounter = 0
-            showMore()
-        })
-        .catch((err) => {
-            console.error('Error retrieving films:', err)
-        })
+        allFilms.value = films
+        batchCounter = 0
+        showMore()
+    } catch (err) {
+        console.error('Error retrieving films:', err)
+    }
 }
 
 onMounted(async () => {

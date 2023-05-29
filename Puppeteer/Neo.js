@@ -31,7 +31,7 @@ async function PageScrape (page, ext, id, imageSrc) {
                 title: title,
                 year: year,
                 rating: rating,
-                length: lenghtMin,
+                len: lenghtMin,
                 genres: genres,
                 imageSrc: imageSrc,
             }
@@ -73,6 +73,7 @@ const launch = async () => {
             } catch (err) {
                 console.log("Error occurred while scraping page:", err)
                 console.log("Skipping to the next link...")
+                id++
                 continue
             }
             const progress = ((id / links.length) * 100).toFixed(2)

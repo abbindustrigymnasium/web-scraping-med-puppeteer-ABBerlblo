@@ -1,6 +1,5 @@
 # Project Title
 
-
 [![License](https://img.shields.io/badge/license-GNU%20AGPL-blue.svg)](LICENSE)
 [![Library](https://img.shields.io/badge/library-Puppeteer-Green.svg)](package.json)
 
@@ -40,13 +39,9 @@ This project is licensed under the [GNU AGPL License](LICENSE).
 
 ## List of Known Bugs
 
-List any known bugs or issues with the project. Include steps to reproduce and, if possible, potential workarounds.
+There is an error when scraping "Das Boot" where the scraping script fails to extract the movie length, this issue is being looked into.
 
 ## Credits
 
-Acknowledge any individuals, projects, or resources that have inspired or assisted your work.
-
-## Acknowledgements
-
-If applicable, acknowledge any individuals, projects, or resources that have inspired or assisted your work.
-
+@abbjetmus for explaining errors in the scraping script
+@Peach-Iced-Tea for helping me while in the development of the the scraping process
