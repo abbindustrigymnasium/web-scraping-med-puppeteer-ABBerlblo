@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full text-center text-xl text-white bg-blue-500 py-12">
+    <div class="w-full text-center text-xl text-white bg-slate-500 py-12">
         Copyright
         &copy;
         {{ currentYear }}

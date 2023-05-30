@@ -1,3 +1,195 @@
+<!-- <template>
+    <div>
+        <Header />
+        <div class="w-full flex flex-col items-center justify-center">
+            <span class="border-b-2 border-slate-400 w-3/5 my-4"></span>
+            <div class="grid grid-cols-4 gap-8 text-lg pt-6">
+                <input type="text" placeholder="Search by year" v-model="searchYear"
+                    class="border-b-2 border-slate-400 text-center w-4/5" />
+                <input type="text" placeholder="Search by rating" v-model="searchRating"
+                    class="border-b-2 border-slate-400 text-center w-4/5" />
+                <input type="text" placeholder="Search by length" v-model="searchLength"
+                    class="border-b-2 border-slate-400 text-center w-4/5" />
+                <input type="text" placeholder="Search by genres" v-model="searchGenres"
+                    class="border-b-2 border-slate-400 text-center w-4/5" />
+            </div>
+            <div>
+                <input type="text" placeholder="Sort by..." v-model="sortBy"
+                    class="border-b-2 border-slate-400 text-center w-4/5 text-lg mt-6">
+            </div>
+            <span class="border-b-2 border-slate-400 w-3/5 my-4"></span>
+        </div>
+        <div class="w-full flex flex-col items-center justify-center">
+            <div class="w-4/5 grid grid-cols-5 gap-4">
+                <div v-for="film in visibleFilms" :key="film.id" class="flex flex-col  items-center p-8">
+                    <div class="p-4 bg-gradient-to-br from-blue-700 to-slate-400">
+                        <img :src="film.imageSrc" :alt="film.title" class="w-24" />
+                    </div>
+                    <span class="border-b-2 border-slate-400 pt-2 w-32"></span>
+                    <div class="px-4 text-lg text-left">
+                        <span class="font-medium">{{ film.title }}</span>
+                        <br />
+                        Placement: {{ film.id }}
+                        <br>
+                        Rating: {{ film.rating }}
+                        <br>
+                        Length : {{ film.len }}
+                        <br>
+                        Year: {{ film.year }}
+                    </div>
+                    <span class="border-b-2 border-slate-400 pt-2 w-32"></span>
+                </div>
+            </div>
+        </div>
+        <div v-if="visibleFilms.length < allFilms.length" class="flex justify-center">
+            <button @click="showMore" class="text-lg my-4 py-2 px-4 border-b border-slate-400">
+                Show more...
+            </button>
+        </div>
+        <Footer />
+    </div>
+</template>
+
+<script setup>
+import { ref, watch, onMounted } from 'vue'
+import axios from 'axios'
+
+const allFilms = ref([])
+const visibleFilms = ref([])
+const batchSize = 10
+let batchCounter = 0
+
+const searchYear = ref('')
+const searchRating = ref('')
+const searchLength = ref('')
+
+const searchGenres = ref('')
+const sortBy = ref('')
+
+watch([searchYear, searchRating, searchLength, sortBy], ([year, rating, length, sort]) => {
+    exeSearch(year, rating, length, sort)
+})
+
+const parseOperatorValue = (type, value) => {
+    const args = value.split('&')
+    const params = []
+
+    args.forEach((arg) => {
+        const operator = arg[0]
+        const parsedValue = arg.slice(1)
+
+        let param
+
+        switch (operator) {
+            case '=':
+                param = `${type}=${parsedValue}`
+                break
+            case '<':
+                param = `${type}_lte=${parsedValue}`
+                break
+            case '>':
+                param = `${type}_gte=${parsedValue}`
+                break
+            case '!':
+                param = `${type}_ne=${parsedValue}`
+                break
+            default:
+                // Treat as default "exact" operator
+                param = `${type}=${arg}`
+                break
+        }
+
+        if (param) {
+            params.push(param)
+        }
+    })
+
+    return params.join('&')
+}
+
+const getSortParam = (value) => {
+    const argument = value.split('&')
+    const sortValues = []
+    const sortOrders = []
+
+    argument.forEach((arg) => {
+        let operator = '='
+        let argValue = arg
+
+        if (arg.startsWith('<')) {
+            operator = '<'
+            argValue = arg.slice(1).toLowerCase()
+        } else if (arg.startsWith('>')) {
+            operator = '>'
+            argValue = arg.slice(1).toLowerCase()
+        }
+
+        if (argValue === "length") { argValue = "len" }
+
+        sortValues.push(argValue)
+        sortOrders.push(operator === '<' ? 'asc' : 'desc')
+    })
+
+    const sortParam = sortValues.join(',')
+    const orderParam = sortOrders.join(',')
+
+    return `_sort=${sortParam}&_order=${orderParam}`
+}
+
+const exeSearch = async (year, rating, len) => {
+    const params = []
+
+    const parseAndPushParam = (type, value) => {
+        if (value) {
+            const parsedParam = parseOperatorValue(type, value)
+            params.push(parsedParam)
+        }
+    }
+
+    parseAndPushParam('year', year)
+    parseAndPushParam('rating', rating)
+    parseAndPushParam('len', len)
+
+    const sortParam = getSortParam(sortBy.value)
+    if (sortParam) {
+        params.push(sortParam)
+    }
+
+    const queryParams = params.join('&')
+
+    console.log(`http://localhost:4000/films${queryParams ? `?${queryParams}` : ''}`)
+    try {
+        const response = await axios.get(`http://localhost:4000/films${queryParams ? `?${queryParams}` : ''}`)
+        const films = response.data
+
+        allFilms.value = films
+
+        console.log(allFilms)
+
+        batchCounter = 0
+        showMore()
+    } catch (err) {
+        console.error('Error retrieving films:', err)
+    }
+}
+
+onMounted(async () => {
+    try {
+        const response = await axios.get('http://localhost:4000/films')
+        allFilms.value = response.data
+        showMore()
+    } catch (err) {
+        console.error('Error retrieving films:', err)
+    }
+})
+
+const showMore = () => {
+    const end = (batchCounter + 1) * batchSize
+    visibleFilms.value = allFilms.value.slice(0, end)
+    batchCounter++
+}
+</script> -->
+
 <template>
   <div>
     <Header />
@@ -175,7 +367,7 @@
         </div>
       </div>
 
-      <div v-if="visibleFilms.length < allFilms.length" class="flex justify-center">
+      <div v-if="showMoreVisible" class="flex justify-center">
         <button @click="showMore" class="text-lg my-4 py-2 px-4 border-b border-slate-400">
           Show more...
         </button>
@@ -192,9 +384,11 @@ import axios from 'axios'
 
 const allFilms = ref([])
 const filteredFilms = ref([])
-const visibleFilms = ref([])
+
+const visibleFilms = ref([]) 
 const batchSize = 10
 let batchCounter = 0
+let showMoreVisible = true
 
 const searchYear = ref('')
 const searchRating = ref('')
@@ -213,6 +407,7 @@ const filterFilmsByGenre = () => {
   const args = genreValue.split('&')
   const exactGenres = []
   const excludeGenres = []
+  const containsGenres = []
 
   args.forEach((arg) => {
     const operator = arg[0]
@@ -222,6 +417,8 @@ const filterFilmsByGenre = () => {
       exactGenres.push(genre)
     } else if (operator === '!') {
       excludeGenres.push(genre)
+    } else if (operator === '/') {
+      containsGenres.push(genre)
     }
   })
 
@@ -239,17 +436,28 @@ const filterFilmsByGenre = () => {
     })
   }
 
+  if (containsGenres.length > 0) {
+    filtered = filtered.filter((film) => {
+      return containsGenres.some((genre) => film.genres.includes(genre))
+    })
+  }
+
+  filtered.sort((a, b) => {
+    const aMatchingGenres = a.genres.filter((genre) => containsGenres.includes(genre))
+    const bMatchingGenres = b.genres.filter((genre) => containsGenres.includes(genre))
+
+    if (aMatchingGenres.length > bMatchingGenres.length) {
+      return -1
+    } else if (aMatchingGenres.length < bMatchingGenres.length) {
+      return 1
+    } else {
+      return 0
+    }
+  })
+
   filteredFilms.value = filtered
   showMore()
 }
-
-watch(
-    [searchYear, searchRating, searchLength, sortBy, searchGenres],
-    ([year, rating, length, sort, genres]) => {
-        exeSearch(year, rating, length, sort)
-        filterFilmsByGenre(genres)
-    }
-)
 
 const parseOperatorValue = (type, value) => {
     const args = value.split('&')
@@ -352,6 +560,16 @@ const exeSearch = async (year, rating, len) => {
     }
 }
 
+const showMore = () => {
+  const end = (batchCounter + 1) * batchSize
+  visibleFilms.value = filteredFilms.value.slice(0, end)
+  batchCounter++
+
+  const isLessThanAllFilms = visibleFilms.value.length < allFilms.value.length || allFilms.value.length === 0
+  const isLessThanBatchSize = visibleFilms.value.length < batchSize
+  showMoreVisible = isLessThanAllFilms && !isLessThanBatchSize
+}
+
 onMounted(async () => {
     try {
         const response = await axios.get('http://localhost:4000/films')
@@ -362,9 +580,11 @@ onMounted(async () => {
     }
 })
 
-const showMore = () => {
-    const end = (batchCounter + 1) * batchSize
-    visibleFilms.value = filteredFilms.value.slice(0, end)
-    batchCounter++
-}
+watch(
+    [searchYear, searchRating, searchLength, sortBy, searchGenres],
+    ([year, rating, length, sort, genres]) => {
+        exeSearch(year, rating, length, sort)
+        filterFilmsByGenre(genres)
+    }
+)
 </script>

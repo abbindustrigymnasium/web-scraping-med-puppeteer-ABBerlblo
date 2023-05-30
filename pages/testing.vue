@@ -175,7 +175,7 @@
         </div>
       </div>
 
-      <div v-if="visibleFilms.length < allFilms.length" class="flex justify-center">
+      <div v-if="showMoreVisible" class="flex justify-center">
         <button @click="showMore" class="text-lg my-4 py-2 px-4 border-b border-slate-400">
           Show more...
         </button>
@@ -192,9 +192,11 @@ import axios from 'axios'
 
 const allFilms = ref([])
 const filteredFilms = ref([])
-const visibleFilms = ref([])
+
+const visibleFilms = ref([]) 
 const batchSize = 10
 let batchCounter = 0
+let showMoreVisible = true
 
 const searchYear = ref('')
 const searchRating = ref('')
@@ -213,6 +215,7 @@ const filterFilmsByGenre = () => {
   const args = genreValue.split('&')
   const exactGenres = []
   const excludeGenres = []
+  const containsGenres = []
 
   args.forEach((arg) => {
     const operator = arg[0]
@@ -222,6 +225,8 @@ const filterFilmsByGenre = () => {
       exactGenres.push(genre)
     } else if (operator === '!') {
       excludeGenres.push(genre)
+    } else if (operator === '/') {
+      containsGenres.push(genre)
     }
   })
 
@@ -239,17 +244,28 @@ const filterFilmsByGenre = () => {
     })
   }
 
+  if (containsGenres.length > 0) {
+    filtered = filtered.filter((film) => {
+      return containsGenres.some((genre) => film.genres.includes(genre))
+    })
+  }
+
+  filtered.sort((a, b) => {
+    const aMatchingGenres = a.genres.filter((genre) => containsGenres.includes(genre))
+    const bMatchingGenres = b.genres.filter((genre) => containsGenres.includes(genre))
+
+    if (aMatchingGenres.length > bMatchingGenres.length) {
+      return -1
+    } else if (aMatchingGenres.length < bMatchingGenres.length) {
+      return 1
+    } else {
+      return 0
+    }
+  })
+
   filteredFilms.value = filtered
   showMore()
 }
-
-watch(
-    [searchYear, searchRating, searchLength, sortBy, searchGenres],
-    ([year, rating, length, sort, genres]) => {
-        exeSearch(year, rating, length, sort)
-        filterFilmsByGenre(genres)
-    }
-)
 
 const parseOperatorValue = (type, value) => {
     const args = value.split('&')
@@ -352,6 +368,16 @@ const exeSearch = async (year, rating, len) => {
     }
 }
 
+const showMore = () => {
+  const end = (batchCounter + 1) * batchSize
+  visibleFilms.value = filteredFilms.value.slice(0, end)
+  batchCounter++
+
+  const isLessThanAllFilms = visibleFilms.value.length < allFilms.value.length || allFilms.value.length === 0
+  const isLessThanBatchSize = visibleFilms.value.length < batchSize
+  showMoreVisible = isLessThanAllFilms && !isLessThanBatchSize
+}
+
 onMounted(async () => {
     try {
         const response = await axios.get('http://localhost:4000/films')
@@ -362,9 +388,11 @@ onMounted(async () => {
     }
 })
 
-const showMore = () => {
-    const end = (batchCounter + 1) * batchSize
-    visibleFilms.value = filteredFilms.value.slice(0, end)
-    batchCounter++
-}
+watch(
+    [searchYear, searchRating, searchLength, sortBy, searchGenres],
+    ([year, rating, length, sort, genres]) => {
+        exeSearch(year, rating, length, sort)
+        filterFilmsByGenre(genres)
+    }
+)
 </script>
