@@ -42,7 +42,19 @@ if (!films) { console.log("Failed to fetch posts") }
     <div>
         <Header />
         <div class="flex justify-center">
-            <button @click="showArchive" class="text-lg my-4 py-2 px-4 border-b border-slate-400">
+            <div class="w-4/5 text-lg">
+                So the idea here is to get an overview of all the scraped data 
+                call this a library, archive or whatever you want.
+                It's not finished yet. I want to implement a way to easelly scrape several
+                websites and store the data in different _db.json files depending on the type of 
+                data on the webpage. This scraped data should then be visible from here so that 
+                users can see the entirety of their collection. So far only the data from the top
+                250 movies from IMDb are avalable.
+                 
+            </div>
+        </div>
+        <div class="flex justify-center">
+            <button @click="showArchive" class="text-lg my-4 py-2 px-4 border-b border-slate-400 hover:font-semibold hover:border-slate-500">
                 View Archive
             </button>
         </div>
@@ -75,10 +87,13 @@ if (!films) { console.log("Failed to fetch posts") }
 <script setup>
 import { ref } from 'vue'
 useHead({ title: 'Web Scraping IMDb' })
+
 const archiveVisible = ref(false)
+
 const { data: films } = await useFetch('http://localhost:4000/films')
 if (!films) { console.log("Failed to fetch posts") }
+
 function showArchive () {
-    archiveVisible.value = true
+    archiveVisible.value = !archiveVisible.value
 }
 </script>
