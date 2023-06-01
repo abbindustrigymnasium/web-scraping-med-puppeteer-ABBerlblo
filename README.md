@@ -26,7 +26,6 @@ Films can be found based on the following criteria:
 ## Table of Contents
 
 - [Installation](#installation)
-- [Startup and Configuration](#startup-and-configuration)
 - [Usage](#usage)
 - [File Manifest](#file-manifest)
 - [License](#license)
@@ -55,7 +54,22 @@ Before getting started, ensure that you have Node.js installed on your machine. 
     ```bash
    npm i
    ```
-4. Install and set up Tailwind CSS:
+4. Install libraries:
+    
+    ```bash
+   npm i puppeteer-cluster
+   ```
+   then:
+   
+    ```bash
+   npm i json-server
+   ```
+   and:
+   
+    ```bash
+   npm i axios
+   ```
+5. Install and set up Tailwind CSS:
 
     ```bash
    npm i -D tailwindcss postcss autoprefixer
@@ -64,29 +78,29 @@ Before getting started, ensure that you have Node.js installed on your machine. 
    ```bash
    npx tailwindcss init
    ```
-5. Scrape the latest movie data:
+6. Scrape the latest movie data:
 
     ```bash
    npm run neo
    ```
-6. Start the JSON Server to create a REST API at http://localhost:4000/:
+7. Start the JSON Server to create a REST API at http://localhost:4000/:
 
     ```bash
    npm run server -- Top
    ```
-7. In a separate terminal, start the development server:
+8. In a separate terminal, start the development server:
 
     ```bash
    npm run dev
    ```
-8. Open your web browser and visit http://localhost:3000 to access Film Finder.
-9. Enjoy  :)
+9. Open your web browser and visit http://localhost:3000 to access Film Finder.
+10. Enjoy  :)
+
+## Usage
 
 ### Configuration
 
 text here
-
-## Usage
 
 Guidelines on how to use the project. Provide examples or code snippets if necessary. Screenshots or GIFs can be added to showcase the project in action.
 
